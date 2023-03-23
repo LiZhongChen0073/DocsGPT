@@ -3,19 +3,29 @@ import {
   createSlice,
   isAnyOf,
 } from '@reduxjs/toolkit';
-import { Doc, setLocalApiKey, setLocalRecentDocs } from './preferenceApi';
+import {
+  Doc,
+  setLocalApiKey,
+  setLocalRecentDocs,
+  setLocalRecentIndex,
+  Index,
+} from './preferenceApi';
 import { RootState } from '../store';
 
 interface Preference {
   apiKey: string;
   selectedDocs: Doc | null;
   sourceDocs: Doc[] | null;
+  sourceIndexes: Doc[] | null;
+  selectedIndexes: Index | null;
 }
 
 const initialState: Preference = {
   apiKey: '',
   selectedDocs: null,
   sourceDocs: null,
+  sourceIndexes: null,
+  selectedIndexes: null,
 };
 
 export const prefSlice = createSlice({
@@ -31,10 +41,23 @@ export const prefSlice = createSlice({
     setSourceDocs: (state, action) => {
       state.sourceDocs?.push(...action.payload);
     },
+
+    setSourceIndexes: (state, action) => {
+      state.sourceIndexes?.push(...action.payload);
+    },
+    setSelectedIndexes: (state, action) => {
+      state.selectedIndexes = action.payload;
+    },
   },
 });
 
-export const { setApiKey, setSelectedDocs, setSourceDocs } = prefSlice.actions;
+export const {
+  setApiKey,
+  setSelectedDocs,
+  setSourceDocs,
+  setSourceIndexes,
+  setSelectedIndexes,
+} = prefSlice.actions;
 export default prefSlice.reducer;
 
 export const prefListenerMiddleware = createListenerMiddleware();
@@ -50,6 +73,16 @@ prefListenerMiddleware.startListening({
   effect: (action, listenerApi) => {
     setLocalRecentDocs(
       (listenerApi.getState() as RootState).preference.selectedDocs ??
+        ([] as unknown as Index),
+    );
+  },
+});
+
+prefListenerMiddleware.startListening({
+  matcher: isAnyOf(setSelectedIndexes),
+  effect: (action, listenerApi) => {
+    setLocalRecentIndex(
+      (listenerApi.getState() as RootState).preference.selectedIndexes ??
         ([] as unknown as Doc),
     );
   },
@@ -58,9 +91,23 @@ prefListenerMiddleware.startListening({
 export const selectApiKey = (state: RootState) => state.preference.apiKey;
 export const selectApiKeyStatus = (state: RootState) =>
   !!state.preference.apiKey;
+
 export const selectSelectedDocsStatus = (state: RootState) =>
   !!state.preference.selectedDocs;
 export const selectSourceDocs = (state: RootState) =>
   state.preference.sourceDocs;
-export const selectSelectedDocs = (state: RootState) =>
-  state.preference.selectedDocs;
+export const selectSelectedDocs = (state: RootState) => {
+  console.log(state.preference.selectedDocs, 333);
+
+  return state.preference.selectedDocs;
+};
+
+export const selectSelectedIndexesStatus = (state: RootState) =>
+  !!state.preference.selectedIndexes;
+export const selectSourceIndexes = (state: RootState) => {
+  console.log(state.preference.sourceIndexes, 444);
+
+  return state.preference.sourceIndexes;
+};
+export const selectSelectedIndexes = (state: RootState) =>
+  state.preference.selectedIndexes;

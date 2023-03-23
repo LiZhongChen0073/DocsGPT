@@ -4,11 +4,7 @@ import Arrow1 from './assets/arrow.svg';
 import Arrow2 from './assets/dropdown-arrow.svg';
 import Message from './assets/message.svg';
 import Hamburger from './assets/hamburger.svg';
-import Key from './assets/key.svg';
-import Info from './assets/info.svg';
-import Link from './assets/link.svg';
 import { ActiveState } from './models/misc';
-import APIKeyModal from './preferences/APIKeyModal';
 import SelectDocsModal from './preferences/SelectDocsModal';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -17,6 +13,10 @@ import {
   selectSelectedDocsStatus,
   selectSourceDocs,
   setSelectedDocs,
+  selectSourceIndexes,
+  selectSelectedIndexes,
+  selectSelectedIndexesStatus,
+  setSelectedIndexes,
 } from './preferences/preferenceSlice';
 import { useOutsideAlerter } from './hooks';
 
@@ -31,7 +31,13 @@ export default function Navigation({
   const docs = useSelector(selectSourceDocs);
   const selectedDocs = useSelector(selectSelectedDocs);
 
+  const indexes = useSelector(selectSourceIndexes);
+  const selectedIndexes = useSelector(selectSelectedIndexes);
+
+  console.log(selectedDocs);
+
   const [isDocsListOpen, setIsDocsListOpen] = useState(false);
+  const [isIndexListOpen, setIsIndexListOpen] = useState(false);
 
   const isApiKeySet = useSelector(selectApiKeyStatus);
   const [apiKeyModalState, setApiKeyModalState] = useState<ActiveState>(
@@ -41,6 +47,10 @@ export default function Navigation({
   const isSelectedDocsSet = useSelector(selectSelectedDocsStatus);
   const [selectedDocsModalState, setSelectedDocsModalState] =
     useState<ActiveState>(isSelectedDocsSet ? 'INACTIVE' : 'ACTIVE');
+
+  const isSelectedIndexesSet = useSelector(selectSelectedIndexesStatus);
+  const [selectedIndexesModalState, setSelectedIndexesModalState] =
+    useState<ActiveState>(isSelectedIndexesSet ? 'INACTIVE' : 'ACTIVE');
 
   const navRef = useRef(null);
   useOutsideAlerter(
@@ -53,9 +63,10 @@ export default function Navigation({
       ) {
         setNavState('INACTIVE');
         setIsDocsListOpen(false);
+        setIsIndexListOpen(false);
       }
     },
-    [navState, isDocsListOpen, apiKeyModalState],
+    [navState, isDocsListOpen, isIndexListOpen, apiKeyModalState],
   );
 
   /*
@@ -128,7 +139,7 @@ export default function Navigation({
               />
             </div>
             {isDocsListOpen && (
-              <div className="absolute top-12 left-0 right-0 mx-6 max-h-52 overflow-y-scroll bg-white shadow-lg">
+              <div className="absolute	top-12 left-0 right-0 z-10 mx-6 max-h-52 overflow-y-scroll bg-white shadow-lg">
                 {docs ? (
                   docs.map((doc, index) => {
                     if (doc.model) {
@@ -156,51 +167,74 @@ export default function Navigation({
               </div>
             )}
           </div>
-          <p className="ml-6 mt-3 font-bold text-jet">Source Docs</p>
+          <div className="11 relative my-4 px-6">
+            <div
+              className="flex h-12 w-full cursor-pointer justify-between rounded-md border-2 bg-white"
+              onClick={() => setIsIndexListOpen(!isIndexListOpen)}
+            >
+              {selectedIndexes && (
+                <p className="my-3 mx-4">
+                  {selectedIndexes.name} {selectedIndexes.version}
+                </p>
+              )}
+              <img
+                src={Arrow2}
+                alt="arrow"
+                className={`${
+                  isIndexListOpen ? 'rotate-0' : '-rotate-90'
+                } mr-3 w-3 transition-all`}
+              />
+            </div>
+            {isIndexListOpen && (
+              <div className="absolute	top-12 left-0 right-0 z-10 mx-6 max-h-52 overflow-y-scroll bg-white shadow-lg">
+                {indexes ? (
+                  indexes.map((item, index) => {
+                    if (item.model) {
+                      return (
+                        <div
+                          key={index}
+                          onClick={() => {
+                            dispatch(setSelectedIndexes(item));
+                            setIsIndexListOpen(false);
+                          }}
+                          className="h-10 w-full cursor-pointer border-x-2 border-b-2 hover:bg-gray-100"
+                        >
+                          <p className="ml-5 py-3">{item.name}</p>
+                        </div>
+                      );
+                    }
+                  })
+                ) : (
+                  <div className="h-10 w-full cursor-pointer border-x-2 border-b-2 hover:bg-gray-100">
+                    <p className="ml-5 py-3">No default documentation.</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          <p className="ml-6 mt-3 font-bold text-jet">Source Docs and Model</p>
         </div>
-        <div className="flex flex-col gap-2 border-b-2 py-2">
-          <div
-            className="my-auto mx-4 flex h-12 cursor-pointer gap-4 rounded-md hover:bg-gray-100"
-            onClick={() => {
-              setApiKeyModalState('ACTIVE');
-            }}
-          >
-            <img src={Key} alt="key" className="ml-2 w-6" />
-            <p className="my-auto text-eerie-black">Reset Key</p>
+        <div className="flex flex-col gap-2  py-2">
+          <div className="my-auto mx-4 flex h-12  gap-4 rounded-md">
+            <p className="my-auto text-eerie-black"></p>
           </div>
         </div>
 
         <div className="flex flex-col gap-2 border-b-2 py-2">
-          <NavLink
-            to="/about"
-            className={({ isActive }) =>
-              `my-auto mx-4 flex h-12 cursor-pointer gap-4 rounded-md hover:bg-gray-100 ${
-                isActive ? 'bg-gray-3000' : ''
-              }`
-            }
-          >
-            <img src={Info} alt="info" className="ml-2 w-5" />
-            <p className="my-auto text-eerie-black">About</p>
-          </NavLink>
-
           <a
-            href="https://discord.gg/WHJdfbQDR4"
             target="_blank"
             rel="noreferrer"
-            className="my-auto mx-4 flex h-12 cursor-pointer gap-4 rounded-md hover:bg-gray-100"
+            className="my-auto mx-4 flex h-12  gap-4 rounded-md"
           >
-            <img src={Link} alt="link" className="ml-2 w-5" />
-            <p className="my-auto text-eerie-black">Discord</p>
+            <p className="my-auto text-eerie-black"></p>
           </a>
 
           <a
-            href="https://github.com/arc53/DocsGPT"
             target="_blank"
             rel="noreferrer"
-            className="my-auto mx-4 flex h-12 cursor-pointer gap-4 rounded-md hover:bg-gray-100"
+            className="my-auto mx-4 flex h-12  gap-4 rounded-md "
           >
-            <img src={Link} alt="link" className="ml-2 w-5" />
-            <p className="my-auto text-eerie-black">Github</p>
+            <p className="my-auto text-eerie-black"></p>
           </a>
         </div>
       </div>
@@ -217,11 +251,11 @@ export default function Navigation({
         setModalState={setSelectedDocsModalState}
         isCancellable={isSelectedDocsSet}
       />
-      <APIKeyModal
+      {/* <APIKeyModal
         modalState={apiKeyModalState}
         setModalState={setApiKeyModalState}
         isCancellable={isApiKeySet}
-      />
+      /> */}
     </>
   );
 }

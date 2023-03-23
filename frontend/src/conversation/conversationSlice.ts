@@ -17,8 +17,8 @@ export const fetchAnswer = createAsyncThunk<
 
   const answer = await fetchAnswerApi(
     question,
-    state.preference.apiKey,
     state.preference.selectedDocs!,
+    state.preference.selectedIndexes!,
   );
   return answer;
 });

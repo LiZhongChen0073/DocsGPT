@@ -1,12 +1,12 @@
 import { Answer, FEEDBACK } from './conversationModels';
-import { Doc } from '../preferences/preferenceApi';
+import { Doc, Index } from '../preferences/preferenceApi';
 
 const apiHost = import.meta.env.VITE_API_HOST || 'https://docsapi.arc53.com';
 
 export function fetchAnswerApi(
   question: string,
-  apiKey: string,
   selectedDocs: Doc,
+  selectedIndex: Index,
 ): Promise<Answer> {
   let namePath = selectedDocs.name;
   if (selectedDocs.language === namePath) {
@@ -31,9 +31,8 @@ export function fetchAnswerApi(
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      question: question,
-      api_key: apiKey,
-      embeddings_key: apiKey,
+      index: selectedIndex.name,
+      docs_key: '',
       history: localStorage.getItem('chatHistory'),
       active_docs: docPath,
     }),

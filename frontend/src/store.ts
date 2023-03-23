@@ -7,6 +7,7 @@ import {
 
 const key = localStorage.getItem('DocsGPTApiKey');
 const doc = localStorage.getItem('DocsGPTRecentDocs');
+const index = localStorage.getItem('DocsGPTRecentIndex');
 
 const store = configureStore({
   preloadedState: {
@@ -25,6 +26,8 @@ const store = configureStore({
           model: '1.0',
         },
       ],
+      selectedIndexes: index !== null ? JSON.parse(index) : null,
+      sourceIndexes: [],
     },
   },
   reducer: {

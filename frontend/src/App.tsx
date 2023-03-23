@@ -1,7 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import Navigation from './Navigation';
 import Conversation from './conversation/Conversation';
-import About from './About';
 import { useState } from 'react';
 import { ActiveState } from './models/misc';
 import { inject } from '@vercel/analytics';
@@ -24,7 +23,6 @@ export default function App() {
       >
         <Routes>
           <Route path="/" element={<Conversation />} />
-          <Route path="/about" element={<About />} />
         </Routes>
       </div>
     </div>
