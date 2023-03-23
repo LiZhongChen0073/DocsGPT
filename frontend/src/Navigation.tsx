@@ -9,18 +9,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   selectApiKeyStatus,
   selectSelectedDocs,
-  selectSelectedDocsStatus,
   selectSourceDocs,
   setSelectedDocs,
   selectSourceIndexes,
   selectSelectedIndexes,
-  selectSelectedIndexesStatus,
   setSelectedIndexes,
   setSourceDocs,
   setSourceIndexes,
 } from './preferences/preferenceSlice';
 import { useOutsideAlerter } from './hooks';
 import {
+  defaultDocs,
   defaultIndexes,
   getDocs,
   getIndexes,
@@ -44,17 +43,6 @@ export default function Navigation({
   const [isIndexListOpen, setIsIndexListOpen] = useState(false);
 
   const isApiKeySet = useSelector(selectApiKeyStatus);
-  const [apiKeyModalState, setApiKeyModalState] = useState<ActiveState>(
-    isApiKeySet ? 'INACTIVE' : 'ACTIVE',
-  );
-
-  const isSelectedDocsSet = useSelector(selectSelectedDocsStatus);
-  const [selectedDocsModalState, setSelectedDocsModalState] =
-    useState<ActiveState>(isSelectedDocsSet ? 'INACTIVE' : 'ACTIVE');
-
-  const isSelectedIndexesSet = useSelector(selectSelectedIndexesStatus);
-  const [selectedIndexesModalState, setSelectedIndexesModalState] =
-    useState<ActiveState>(isSelectedIndexesSet ? 'INACTIVE' : 'ACTIVE');
 
   const navRef = useRef(null);
   useOutsideAlerter(
@@ -62,16 +50,16 @@ export default function Navigation({
     () => {
       if (
         window.matchMedia('(max-width: 768px)').matches &&
-        navState === 'ACTIVE' &&
-        apiKeyModalState === 'INACTIVE'
+        navState === 'ACTIVE'
       ) {
         setNavState('INACTIVE');
         setIsDocsListOpen(false);
         setIsIndexListOpen(false);
       }
     },
-    [navState, isDocsListOpen, isIndexListOpen, apiKeyModalState],
+    [navState, isDocsListOpen, isIndexListOpen],
   );
+
   useEffect(() => {
     async function requestDocs() {
       const data = await getDocs();
@@ -82,15 +70,16 @@ export default function Navigation({
   useEffect(() => {
     async function requestIndexes() {
       const data = await getIndexes();
+
       dispatch(setSourceIndexes(data));
     }
     requestIndexes();
   }, []);
 
   useEffect(() => {
-    dispatch(setSelectedDocs(defaultIndexes[0]));
+    dispatch(setSelectedDocs(defaultDocs[0]));
     dispatch(setSelectedIndexes(defaultIndexes[0]));
-  });
+  }, []);
 
   /*
     Needed to fix bug where if mobile nav was closed and then window was resized to desktop, nav would still be closed but the button to open would be gone, as per #1 on issue #146
@@ -129,19 +118,6 @@ export default function Navigation({
             />
           </button>
         </div>
-        <NavLink
-          to={'/'}
-          className={({ isActive }) =>
-            `${
-              isActive ? 'bg-gray-3000' : ''
-            } my-auto mx-4 mt-4 flex h-12 cursor-pointer gap-4 rounded-md hover:bg-gray-100`
-          }
-        >
-          <img src={Message} className="ml-2 w-5"></img>
-          <p className="my-auto text-eerie-black">Chat</p>
-        </NavLink>
-
-        <div className="flex-grow border-b-2 border-gray-100"></div>
         <div className="flex flex-col-reverse border-b-2">
           <div className="relative my-4 px-6">
             <div
@@ -157,12 +133,12 @@ export default function Navigation({
                 src={Arrow2}
                 alt="arrow"
                 className={`${
-                  isDocsListOpen ? 'rotate-180' : '-rotate-90'
+                  isDocsListOpen ? 'rotate-0' : '-rotate-90'
                 } mr-3 w-3 transition-all`}
               />
             </div>
             {isDocsListOpen && (
-              <div className="absolute	-top-52 left-0 right-0 z-10 mx-6 max-h-52 overflow-y-scroll bg-white shadow-lg">
+              <div className="min-h-208	absolute top-12 left-0 right-0 z-10 mx-6 max-h-52 overflow-y-scroll bg-white shadow-lg">
                 {docs ? (
                   docs.map((doc, index) => {
                     return (
@@ -202,12 +178,12 @@ export default function Navigation({
                 src={Arrow2}
                 alt="arrow"
                 className={`${
-                  isIndexListOpen ? 'rotate-180' : '-rotate-90'
+                  isIndexListOpen ? 'rotate-0' : '-rotate-90'
                 } mr-3 w-3 transition-all`}
               />
             </div>
             {isIndexListOpen && (
-              <div className="absolute	-top-52 left-0 right-0 z-10 mx-6 max-h-52 overflow-y-scroll bg-white shadow-lg">
+              <div className="absolute	top-12 left-0 right-0 z-10 mx-6 max-h-52 overflow-y-scroll bg-white shadow-lg">
                 {indexes ? (
                   indexes.map((item, index) => {
                     return (
@@ -233,6 +209,19 @@ export default function Navigation({
           </div>
           <p className="ml-6 mt-3 font-bold text-jet">Source Docs and Model</p>
         </div>
+
+        <div className="flex-grow border-b-2 border-gray-100"></div>
+        <NavLink
+          to={'/'}
+          className={({ isActive }) =>
+            `${
+              isActive ? 'bg-gray-3000' : ''
+            } my-auto mx-4 mt-4 flex h-12 cursor-pointer gap-4 rounded-md hover:bg-gray-100`
+          }
+        >
+          <img src={Message} className="ml-2 w-5"></img>
+          <p className="my-auto text-eerie-black">Chat</p>
+        </NavLink>
       </div>
       <div className="fixed h-16 w-full border-b-2 bg-gray-50 md:hidden">
         <button
@@ -242,11 +231,6 @@ export default function Navigation({
           <img src={Hamburger} alt="menu toggle" className="w-7" />
         </button>
       </div>
-      {/* <SelectDocsModal
-        modalState={selectedDocsModalState}
-        setModalState={setSelectedDocsModalState}
-        isCancellable={isSelectedDocsSet}
-      /> */}
     </>
   );
 }
