@@ -14,18 +14,7 @@ const store = configureStore({
     preference: {
       apiKey: key ?? '',
       selectedDocs: doc !== null ? JSON.parse(doc) : null,
-      sourceDocs: [
-        {
-          language: '',
-          name: 'default',
-          version: '',
-          dat: '',
-          description: '',
-          docLink: '',
-          fullName: '',
-          model: '1.0',
-        },
-      ],
+      sourceDocs: [],
       selectedIndexes: index !== null ? JSON.parse(index) : null,
       sourceIndexes: [],
     },

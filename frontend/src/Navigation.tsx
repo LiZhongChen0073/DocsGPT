@@ -5,7 +5,6 @@ import Arrow2 from './assets/dropdown-arrow.svg';
 import Message from './assets/message.svg';
 import Hamburger from './assets/hamburger.svg';
 import { ActiveState } from './models/misc';
-import SelectDocsModal from './preferences/SelectDocsModal';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   selectApiKeyStatus,
@@ -17,8 +16,15 @@ import {
   selectSelectedIndexes,
   selectSelectedIndexesStatus,
   setSelectedIndexes,
+  setSourceDocs,
+  setSourceIndexes,
 } from './preferences/preferenceSlice';
 import { useOutsideAlerter } from './hooks';
+import {
+  defaultIndexes,
+  getDocs,
+  getIndexes,
+} from './preferences/preferenceApi';
 
 export default function Navigation({
   navState,
@@ -33,8 +39,6 @@ export default function Navigation({
 
   const indexes = useSelector(selectSourceIndexes);
   const selectedIndexes = useSelector(selectSelectedIndexes);
-
-  console.log(selectedDocs);
 
   const [isDocsListOpen, setIsDocsListOpen] = useState(false);
   const [isIndexListOpen, setIsIndexListOpen] = useState(false);
@@ -68,6 +72,25 @@ export default function Navigation({
     },
     [navState, isDocsListOpen, isIndexListOpen, apiKeyModalState],
   );
+  useEffect(() => {
+    async function requestDocs() {
+      const data = await getDocs();
+      dispatch(setSourceDocs(data));
+    }
+    requestDocs();
+  }, []);
+  useEffect(() => {
+    async function requestIndexes() {
+      const data = await getIndexes();
+      dispatch(setSourceIndexes(data));
+    }
+    requestIndexes();
+  }, []);
+
+  useEffect(() => {
+    dispatch(setSelectedDocs(defaultIndexes[0]));
+    dispatch(setSelectedIndexes(defaultIndexes[0]));
+  });
 
   /*
     Needed to fix bug where if mobile nav was closed and then window was resized to desktop, nav would still be closed but the button to open would be gone, as per #1 on issue #146
@@ -134,30 +157,28 @@ export default function Navigation({
                 src={Arrow2}
                 alt="arrow"
                 className={`${
-                  isDocsListOpen ? 'rotate-0' : '-rotate-90'
+                  isDocsListOpen ? 'rotate-180' : '-rotate-90'
                 } mr-3 w-3 transition-all`}
               />
             </div>
             {isDocsListOpen && (
-              <div className="absolute	top-12 left-0 right-0 z-10 mx-6 max-h-52 overflow-y-scroll bg-white shadow-lg">
+              <div className="absolute	-top-52 left-0 right-0 z-10 mx-6 max-h-52 overflow-y-scroll bg-white shadow-lg">
                 {docs ? (
                   docs.map((doc, index) => {
-                    if (doc.model) {
-                      return (
-                        <div
-                          key={index}
-                          onClick={() => {
-                            dispatch(setSelectedDocs(doc));
-                            setIsDocsListOpen(false);
-                          }}
-                          className="h-10 w-full cursor-pointer border-x-2 border-b-2 hover:bg-gray-100"
-                        >
-                          <p className="ml-5 py-3">
-                            {doc.name} {doc.version}
-                          </p>
-                        </div>
-                      );
-                    }
+                    return (
+                      <div
+                        key={index}
+                        onClick={() => {
+                          dispatch(setSelectedDocs(doc));
+                          setIsDocsListOpen(false);
+                        }}
+                        className="h-10 w-full cursor-pointer border-x-2 border-b-2 hover:bg-gray-100"
+                      >
+                        <p className="ml-5 py-3">
+                          {doc.name} {doc.version}
+                        </p>
+                      </div>
+                    );
                   })
                 ) : (
                   <div className="h-10 w-full cursor-pointer border-x-2 border-b-2 hover:bg-gray-100">
@@ -181,28 +202,26 @@ export default function Navigation({
                 src={Arrow2}
                 alt="arrow"
                 className={`${
-                  isIndexListOpen ? 'rotate-0' : '-rotate-90'
+                  isIndexListOpen ? 'rotate-180' : '-rotate-90'
                 } mr-3 w-3 transition-all`}
               />
             </div>
             {isIndexListOpen && (
-              <div className="absolute	top-12 left-0 right-0 z-10 mx-6 max-h-52 overflow-y-scroll bg-white shadow-lg">
+              <div className="absolute	-top-52 left-0 right-0 z-10 mx-6 max-h-52 overflow-y-scroll bg-white shadow-lg">
                 {indexes ? (
                   indexes.map((item, index) => {
-                    if (item.model) {
-                      return (
-                        <div
-                          key={index}
-                          onClick={() => {
-                            dispatch(setSelectedIndexes(item));
-                            setIsIndexListOpen(false);
-                          }}
-                          className="h-10 w-full cursor-pointer border-x-2 border-b-2 hover:bg-gray-100"
-                        >
-                          <p className="ml-5 py-3">{item.name}</p>
-                        </div>
-                      );
-                    }
+                    return (
+                      <div
+                        key={index}
+                        onClick={() => {
+                          dispatch(setSelectedIndexes(item));
+                          setIsIndexListOpen(false);
+                        }}
+                        className="h-10 w-full cursor-pointer border-x-2 border-b-2 hover:bg-gray-100"
+                      >
+                        <p className="ml-5 py-3">{item.name}</p>
+                      </div>
+                    );
                   })
                 ) : (
                   <div className="h-10 w-full cursor-pointer border-x-2 border-b-2 hover:bg-gray-100">
@@ -214,29 +233,6 @@ export default function Navigation({
           </div>
           <p className="ml-6 mt-3 font-bold text-jet">Source Docs and Model</p>
         </div>
-        <div className="flex flex-col gap-2  py-2">
-          <div className="my-auto mx-4 flex h-12  gap-4 rounded-md">
-            <p className="my-auto text-eerie-black"></p>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-2 border-b-2 py-2">
-          <a
-            target="_blank"
-            rel="noreferrer"
-            className="my-auto mx-4 flex h-12  gap-4 rounded-md"
-          >
-            <p className="my-auto text-eerie-black"></p>
-          </a>
-
-          <a
-            target="_blank"
-            rel="noreferrer"
-            className="my-auto mx-4 flex h-12  gap-4 rounded-md "
-          >
-            <p className="my-auto text-eerie-black"></p>
-          </a>
-        </div>
       </div>
       <div className="fixed h-16 w-full border-b-2 bg-gray-50 md:hidden">
         <button
@@ -246,15 +242,10 @@ export default function Navigation({
           <img src={Hamburger} alt="menu toggle" className="w-7" />
         </button>
       </div>
-      <SelectDocsModal
+      {/* <SelectDocsModal
         modalState={selectedDocsModalState}
         setModalState={setSelectedDocsModalState}
         isCancellable={isSelectedDocsSet}
-      />
-      {/* <APIKeyModal
-        modalState={apiKeyModalState}
-        setModalState={setApiKeyModalState}
-        isCancellable={isApiKeySet}
       /> */}
     </>
   );

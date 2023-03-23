@@ -31,8 +31,6 @@ document.getElementById("message-form").addEventListener("submit", function(even
     .then(response => response.json())
     .then(data => {
       console.log('Success:', data);
-
-        
         msg_html = '<div class="bg-indigo-500 text-white p-2 rounded-lg mb-2 self-start"><code class="text-sm">'
         msg_html += data.answer
         msg_html += '</code></div>'

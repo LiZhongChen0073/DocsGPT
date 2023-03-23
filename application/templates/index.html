@@ -187,12 +187,6 @@ This will return a new DataFrame with all the columns from both tables, and only
                 }
 
           }
-        {% if not api_key_set %}
-        if (localStorage.getItem('apiKey') === null) {
-            console.log("apiKey is not set")
-            document.getElementById('modal').classList.toggle('hidden')
-        }
-        {% endif %}
         if (localStorage.getItem('docsIndex') === null) {
             console.log("docsIndex is not set")
             docsIndex()
@@ -205,9 +199,6 @@ This will return a new DataFrame with all the columns from both tables, and only
         generateOptions()
 
   </script>
-    {% if not api_key_set %}
-    <script src="{{url_for('static',filename='src/authapi.js')}}"></script>
-    {% endif %}
   <script src="{{url_for('static',filename='src/chat.js')}}"></script>
   <script src="{{url_for('static',filename='src/choiceChange.js')}}"></script>
 

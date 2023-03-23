@@ -1,30 +1,13 @@
 import { Answer, FEEDBACK } from './conversationModels';
 import { Doc, Index } from '../preferences/preferenceApi';
 
-const apiHost = import.meta.env.VITE_API_HOST || 'https://docsapi.arc53.com';
+const apiHost = import.meta.env.VITE_API_HOST || 'http://127.0.0.1:5601';
 
 export function fetchAnswerApi(
   question: string,
   selectedDocs: Doc,
   selectedIndex: Index,
 ): Promise<Answer> {
-  let namePath = selectedDocs.name;
-  if (selectedDocs.language === namePath) {
-    namePath = '.project';
-  }
-
-  const docPath =
-    selectedDocs.name === 'default'
-      ? 'default'
-      : selectedDocs.language +
-        '/' +
-        namePath +
-        '/' +
-        selectedDocs.version +
-        '/' +
-        selectedDocs.model +
-        '/';
-
   return fetch(apiHost + '/api/answer', {
     method: 'POST',
     headers: {
@@ -32,9 +15,9 @@ export function fetchAnswerApi(
     },
     body: JSON.stringify({
       index: selectedIndex.name,
-      docs_key: '',
+      docs_key: selectedIndex.key,
       history: localStorage.getItem('chatHistory'),
-      active_docs: docPath,
+      active_docs: selectedDocs.name,
     }),
   })
     .then((response) => {

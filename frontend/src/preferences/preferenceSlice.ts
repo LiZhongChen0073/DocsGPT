@@ -9,6 +9,7 @@ import {
   setLocalRecentDocs,
   setLocalRecentIndex,
   Index,
+  Key,
 } from './preferenceApi';
 import { RootState } from '../store';
 
@@ -22,10 +23,16 @@ interface Preference {
 
 const initialState: Preference = {
   apiKey: '',
-  selectedDocs: null,
+  selectedDocs: {
+    name: 'ONES Manual',
+    key: Key.Manual,
+  },
   sourceDocs: null,
   sourceIndexes: null,
-  selectedIndexes: null,
+  selectedIndexes: {
+    name: 'Faiss',
+    key: Key.faiss,
+  },
 };
 
 export const prefSlice = createSlice({

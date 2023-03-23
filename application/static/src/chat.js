@@ -8,7 +8,6 @@ document.getElementById('close').addEventListener('click',()=>{
 function submitForm(event){
     event.preventDefault()
     var message = document.getElementById("message-input").value;
-    console.log(message.length)
     if(message.length === 0){
         return
     }
@@ -39,7 +38,6 @@ function submitForm(event){
             active_docs: localStorage.getItem('activeDocs')}),
     }).then((response)=> response.json())
     .then(data => {
-            console.log('Success:', data);
             if(data.error){
             document.getElementById('text-error').textContent = `Error : ${JSON.stringify(data.message)}`
             errorModal.classList.toggle('hidden')
@@ -57,20 +55,10 @@ function submitForm(event){
             document.getElementById("button-submit").disabled = false;
             let chatHistory = [message, data.answer || ''];
             localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-
-            
-
-
         })
         .catch((error) => {
             console.error('Error:', error);
-            // console.log(error);
-            // document.getElementById("button-submit").innerHTML = 'Send';
-            // document.getElementById("button-submit").disabled = false;
-
         });
 }
 
-//window.addEventListener('submit',submitForm)
-// rewrite using id = button-submit
 document.getElementById("button-submit").addEventListener('click',submitForm)

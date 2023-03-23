@@ -1,30 +1,71 @@
 // not all properties in Doc are going to be present. Make some optional
 export type Doc = {
   name: string;
-  language: string;
-  version: string;
-  description: string;
-  fullName: string;
-  dat: string;
-  docLink: string;
-  model: string;
+  version?: string;
+  description?: string;
+  key: Key;
 };
 
+export enum Key {
+  // 用户手册
+  Manual,
+  // 索引类型
+  faiss,
+  chromadb,
+  simplevector,
+  leafTree,
+}
+
 export type Index = Doc;
+
+export const defaultIndexes: Index[] = [
+  {
+    name: 'Faiss',
+    key: Key.faiss,
+  },
+  {
+    name: 'ChromaDB',
+    key: Key.chromadb,
+  },
+  {
+    name: 'GPTSimplevectorIndex',
+    key: Key.simplevector,
+  },
+  {
+    name: 'GPTTreeIndexLeaf',
+    key: Key.leafTree,
+  },
+  // {
+  //   name: 'GPTTreeIndex',
+  //   key: 'manual',
+
+  // },
+  // {
+  //   name: 'GPTTreeIndexRetQuery',
+  //   key: 'manual',
+
+  // },
+];
 
 //Fetches all JSON objects from the source. We only use the objects with the "model" property in SelectDocsModal.tsx. Hopefully can clean up the source file later.
 export async function getDocs(): Promise<Doc[] | null> {
   try {
-    const response = await fetch(
-      'https://d3dg1063dc54p9.cloudfront.net/combined.json',
-    );
-    const data = await response.json();
+    // const response = await fetch(
+    //   'https://d3dg1063dc54p9.cloudfront.net/combined.json',
+    // );
 
-    const docs: Doc[] = [];
+    // const data = await response.json();
 
-    data.forEach((doc: object) => {
-      docs.push(doc as Doc);
-    });
+    const docs: Doc[] = [
+      {
+        name: 'ONES Manual',
+        key: Key.Manual,
+      },
+    ];
+
+    // data.forEach((doc: object) => {
+    //   docs.push(doc as Doc);
+    // });
 
     return docs;
   } catch (error) {
@@ -40,86 +81,7 @@ export async function getIndexes(): Promise<Doc[] | null> {
     // );
     // const data = await response.json();
 
-    const indexes: Doc[] = [];
-
-    const data: Index[] = [
-      {
-        name: 'Faiss',
-        language: '',
-        version: '',
-        description: '',
-        fullName: '',
-        docLink: '',
-        model: '1',
-        dat: '',
-      },
-      {
-        name: 'chromadb',
-        language: '',
-        version: '',
-        description: '',
-        fullName: '',
-        docLink: '',
-        model: '1',
-        dat: '',
-      },
-      {
-        name: 'gptsimplevectorindex',
-        language: '',
-        version: '',
-        description: '',
-        fullName: '',
-        docLink: '',
-        model: '1',
-        dat: '',
-      },
-      {
-        name: 'gpttreeindexleaf',
-        language: '',
-        version: '',
-        description: '',
-        fullName: '',
-        docLink: '',
-        model: '1',
-        dat: '',
-      },
-      {
-        name: 'gpttreeindex',
-        language: '',
-        version: '',
-        description: '',
-        fullName: '',
-        docLink: '',
-        model: '1',
-        dat: '',
-      },
-      {
-        name: 'embedding',
-        language: '',
-        version: '',
-        description: '',
-        fullName: '',
-        docLink: '',
-        model: '1',
-        dat: '',
-      },
-      {
-        name: 'gpttreeindexretquery',
-        language: '',
-        version: '',
-        description: '',
-        fullName: '',
-        docLink: '',
-        model: '1',
-        dat: '',
-      },
-    ];
-
-    data.forEach((doc: object) => {
-      indexes.push(doc as Doc);
-    });
-
-    return indexes;
+    return de;
   } catch (error) {
     console.log(error);
     return null;

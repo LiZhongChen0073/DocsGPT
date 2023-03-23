@@ -29,8 +29,6 @@ export default function APIKeyModal({
     selectedDoc,
   );
   const indexes = useSelector(selectSourceIndexes);
-  console.log('indexes', indexes);
-
   const selectedIndex = useSelector(selectSelectedIndexes);
   const [localSelectedIndexes, setLocalSelectedIndexes] =
     useState<Index | null>(selectedIndex);
@@ -64,8 +62,6 @@ export default function APIKeyModal({
   useEffect(() => {
     async function requestIndexes() {
       const data = await getIndexes();
-      console.log('getIndexes', data);
-
       dispatch(setSourceIndexes(data));
     }
     requestIndexes();
