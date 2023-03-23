@@ -52,13 +52,13 @@ export default function APIKeyModal({
     setModalState('INACTIVE');
   }
 
-  useEffect(() => {
-    async function requestDocs() {
-      const data = await getDocs();
-      dispatch(setSourceDocs(data));
-    }
-    requestDocs();
-  }, []);
+  // useEffect(() => {
+  //   async function requestDocs() {
+  //     const data = await getDocs();
+  //     dispatch(setSourceDocs(data));
+  //   }
+  //   requestDocs();
+  // }, []);
   useEffect(() => {
     async function requestIndexes() {
       const data = await getIndexes();

@@ -37,14 +37,19 @@ export const defaultIndexes: Index[] = [
   },
   // {
   //   name: 'GPTTreeIndex',
-  //   key: 'manual',
-
+  //   key: Key.leafTree,
   // },
   // {
   //   name: 'GPTTreeIndexRetQuery',
-  //   key: 'manual',
-
+  //   key: Key.leafTree,
   // },
+];
+
+export const defaultDocs: Doc[] = [
+  {
+    name: 'ONES Manual111',
+    key: Key.Manual,
+  },
 ];
 
 //Fetches all JSON objects from the source. We only use the objects with the "model" property in SelectDocsModal.tsx. Hopefully can clean up the source file later.
@@ -56,32 +61,25 @@ export async function getDocs(): Promise<Doc[] | null> {
 
     // const data = await response.json();
 
-    const docs: Doc[] = [
-      {
-        name: 'ONES Manual',
-        key: Key.Manual,
-      },
-    ];
-
     // data.forEach((doc: object) => {
     //   docs.push(doc as Doc);
     // });
 
-    return docs;
+    return defaultDocs;
   } catch (error) {
     console.log(error);
     return null;
   }
 }
 
-export async function getIndexes(): Promise<Doc[] | null> {
+export async function getIndexes(): Promise<Index[] | null> {
   try {
     // const response = await fetch(
     //   'https://d3dg1063dc54p9.cloudfront.net/combined.json',
     // );
     // const data = await response.json();
 
-    return de;
+    return defaultIndexes;
   } catch (error) {
     console.log(error);
     return null;
@@ -104,22 +102,8 @@ export function setLocalApiKey(key: string): void {
 
 export function setLocalRecentDocs(doc: Doc): void {
   localStorage.setItem('DocsGPTRecentDocs', JSON.stringify(doc));
-  let namePath = doc.name;
-  if (doc.language === namePath) {
-    namePath = '.project';
-  }
 
-  const docPath =
-    doc.name === 'default'
-      ? 'default'
-      : doc.language +
-        '/' +
-        namePath +
-        '/' +
-        doc.version +
-        '/' +
-        doc.model +
-        '/';
+  const docPath = doc.name;
   const apiHost = import.meta.env.VITE_API_HOST || 'https://docsapi.arc53.com';
   fetch(apiHost + '/api/docs_check', {
     method: 'POST',
@@ -134,22 +118,8 @@ export function setLocalRecentDocs(doc: Doc): void {
 
 export function setLocalRecentIndex(index: Index): void {
   localStorage.setItem('DocsGPTRecentIndex', JSON.stringify(index));
-  let namePath = index.name;
-  if (index.language === namePath) {
-    namePath = '.project';
-  }
 
-  const indexPath =
-    index.name === 'default'
-      ? 'default'
-      : index.language +
-        '/' +
-        namePath +
-        '/' +
-        index.version +
-        '/' +
-        index.model +
-        '/';
+  const indexPath = index.name;
   const apiHost =
     import.meta.env.VITE_API_HOST || 'https://indexsapi.arc53.com';
   fetch(apiHost + '/api/docs_check', {

@@ -46,6 +46,8 @@ export const prefSlice = createSlice({
       state.selectedDocs = action.payload;
     },
     setSourceDocs: (state, action) => {
+      console.log(111222, action.payload);
+
       state.sourceDocs?.push(...action.payload);
     },
 
